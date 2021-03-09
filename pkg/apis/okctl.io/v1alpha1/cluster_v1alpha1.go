@@ -15,7 +15,7 @@ const (
 	// ClusterKind is a string value that represents the resource type
 	ClusterKind = "Cluster"
 	// ClusterAPIVersion defines the versioned schema of this representation
-	ClusterAPIVersion = "okctl.io/v1alpha1"
+	ClusterAPIVersion = "okctl.io/v1alpha2"
 )
 
 // Cluster is a unique Kubernetes cluster with a set of integrations that
@@ -30,10 +30,10 @@ type Cluster struct {
 	// this cluster will integrate with.
 	Github ClusterGithub `json:"github"`
 
-	// PrimaryDNSZone defines the main primary zone to associate with this
-	// cluster. This will be the zone that we will use to create domains
+	// ClusterRootURL defines the main primary zone to associate with this
+	// cluster. This will be the zone that we will use to create subdomains
 	// for auth, ArgoCD, etc.
-	PrimaryDNSZone ClusterDNSZone `json:"primaryDNSZone"`
+	ClusterRootURL string `json:"clusterRootURL"`
 
 	// VPC defines how we configure the VPC for the cluster
 	// +optional
@@ -55,7 +55,7 @@ func (c Cluster) Validate() error {
 	result := validation.ValidateStruct(&c,
 		validation.Field(&c.Metadata),
 		validation.Field(&c.Github),
-		validation.Field(&c.PrimaryDNSZone),
+		validation.Field(&c.ClusterRootURL),
 		validation.Field(&c.VPC),
 		validation.Field(&c.Integrations),
 	)
@@ -257,10 +257,7 @@ func NewDefaultCluster(name, env, org, repo, team, accountID string) Cluster {
 			Region:      "eu-west-1",
 			AccountID:   accountID,
 		},
-		PrimaryDNSZone: ClusterDNSZone{
-			ParentDomain:  fmt.Sprintf("%s-%s.oslo.systems", name, env),
-			ReuseExisting: false,
-		},
+		ClusterRootURL: fmt.Sprintf("%s-%s.oslo.systems", name, env),
 		Github: ClusterGithub{
 			Organisation: org,
 			Repository:   repo,

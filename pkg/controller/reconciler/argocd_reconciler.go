@@ -72,8 +72,8 @@ func (z *argocdReconciler) Reconcile(node *resourcetree.ResourceNode) (result Re
 
 		_, err = z.argocdClient.CreateArgoCD(z.commonMetadata.Ctx, client.CreateArgoCDOpts{
 			ID:                 z.commonMetadata.ClusterID,
-			Domain:             z.commonMetadata.Declaration.PrimaryDNSZone.ParentDomain,
-			FQDN:               dns.Fqdn(z.commonMetadata.Declaration.PrimaryDNSZone.ParentDomain),
+			Domain:             z.commonMetadata.Declaration.ClusterRootURL,
+			FQDN:               dns.Fqdn(z.commonMetadata.Declaration.ClusterRootURL),
 			HostedZoneID:       resourceState.HostedZone.ID,
 			GithubOrganisation: z.commonMetadata.Declaration.Github.Organisation,
 			UserPoolID:         resourceState.UserPoolID,
