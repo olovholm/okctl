@@ -4,7 +4,6 @@ github:
   organisation: oslokommune
   outputPath: infrastructure
   repository: okctl-iac
-  team: kjøremiljø
 integrations:
   argoCD: true
   autoscaler: true

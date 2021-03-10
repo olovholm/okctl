@@ -254,7 +254,7 @@ func inferClusterFromStdinOrFile(stdin io.Reader, path string) (*v1alpha1.Cluste
 		cluster v1alpha1.Cluster
 	)
 
-	cluster = v1alpha1.NewDefaultCluster("", "", "", "", "", "")
+	cluster = v1alpha1.NewDefaultCluster("", "", "", "", "")
 
 	_, err = io.Copy(&buffer, inputReader)
 	if err != nil {

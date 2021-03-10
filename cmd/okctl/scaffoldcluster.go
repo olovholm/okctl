@@ -18,7 +18,6 @@ type scaffoldClusterOpts struct {
 	Environment    string
 	Organization   string
 	RepositoryName string
-	Team           string
 }
 
 func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
@@ -42,7 +41,6 @@ func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
 				opts.Environment,
 				opts.Organization,
 				opts.RepositoryName,
-				opts.Team,
 				opts.AWSAccountID,
 			)
 
@@ -63,7 +61,6 @@ func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
 	flags := cmd.Flags()
 	flags.StringVarP(&opts.Organization, "github-organization", "o", "oslokommune", usageOrganization)
 	flags.StringVarP(&opts.RepositoryName, "repository-name", "r", "my_iac_repo_name", usageRepository)
-	flags.StringVarP(&opts.Team, "github-team", "t", "my_team", usageTeam)
 	flags.StringVarP(&opts.AWSAccountID, "aws-account-id", "i", "123456789123", usageAWSAccountID)
 
 	return cmd
@@ -73,6 +70,5 @@ const (
 	usageAWSAccountID = `the aws account where the resources provisioned by okctl should reside`
 	usageOrganization = `the organization that owns the infrastructure-as-code repository`
 	usageRepository   = `the name of the repository that will contain infrastructure-as-code`
-	usageTeam         = `the team that is responsible and has access rights to the infrastructure-as-code repository`
 	exampleUsage      = `okctl scaffold cluster utviklerportalen production > cluster.yaml`
 )

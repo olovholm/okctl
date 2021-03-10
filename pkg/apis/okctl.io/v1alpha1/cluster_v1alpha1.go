@@ -26,7 +26,7 @@ type Cluster struct {
 	// Metadata uniquely identifies a cluster.
 	Metadata ClusterMeta `json:"metadata"`
 
-	// Github defines what organisation, repository, team, etc. that
+	// Github defines what organisation, repository, etc. that
 	// this cluster will integrate with.
 	Github ClusterGithub `json:"github"`
 
@@ -157,10 +157,6 @@ type ClusterGithub struct {
 	// OutputPath is a path from the root of the org/repository where
 	// we can store generated output files
 	OutputPath string `json:"outputPath"`
-
-	// Team name on github.com, e.g., "kjøremiljø". The team you
-	// specify here must be owned by the organisation specified above.
-	Team string `json:"team"`
 }
 
 // Validate returns an error if ClusterGithub is missing required information
@@ -169,7 +165,6 @@ func (c ClusterGithub) Validate() error {
 		validation.Field(&c.Organisation, validation.Required),
 		validation.Field(&c.Repository, validation.Required),
 		validation.Field(&c.OutputPath, validation.Required),
-		validation.Field(&c.Team, validation.Required),
 	)
 }
 
@@ -248,7 +243,7 @@ func ClusterTypeMeta() metav1.TypeMeta {
 }
 
 // NewDefaultCluster returns a cluster definition with sensible defaults
-func NewDefaultCluster(name, env, org, repo, team, accountID string) Cluster {
+func NewDefaultCluster(name, env, org, repo, accountID string) Cluster {
 	return Cluster{
 		TypeMeta: ClusterTypeMeta(),
 		Metadata: ClusterMeta{
@@ -262,7 +257,6 @@ func NewDefaultCluster(name, env, org, repo, team, accountID string) Cluster {
 			Organisation: org,
 			Repository:   repo,
 			OutputPath:   "infrastructure",
-			Team:         team,
 		},
 		VPC: &ClusterVPC{
 			CIDR:             "192.168.0.0/20",

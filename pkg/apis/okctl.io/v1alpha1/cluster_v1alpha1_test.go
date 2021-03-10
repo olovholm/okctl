@@ -29,7 +29,6 @@ func TestCluster(t *testing.T) {
 				"stage",
 				"oslokommune",
 				"okctl-iac",
-				"kjøremiljø",
 				"123456789012",
 			),
 			golden: "default-cluster.yml",
