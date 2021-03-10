@@ -53,9 +53,9 @@ type Cluster struct {
 // Validate calls each members Validate function
 func (c Cluster) Validate() error {
 	result := validation.ValidateStruct(&c,
+		validation.Field(&c.ClusterRootURL, validation.Required),
 		validation.Field(&c.Metadata),
 		validation.Field(&c.Github),
-		validation.Field(&c.ClusterRootURL),
 		validation.Field(&c.VPC),
 		validation.Field(&c.Integrations),
 	)
