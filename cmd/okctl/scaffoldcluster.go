@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+	"text/template"
 
-	"github.com/oslokommune/okctl/pkg/apis/okctl.io/v1alpha1"
 	"github.com/oslokommune/okctl/pkg/okctl"
 	"github.com/spf13/cobra"
-	"text/template"
 )
 
-const scaffoldClusterArgumentQuantity = 2
+const scaffoldClusterArgumentQuantity = 0
 
 type scaffoldClusterOpts struct {
 	Name string
@@ -24,7 +23,7 @@ func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
 	opts := scaffoldClusterOpts{}
 
 	cmd := &cobra.Command{
-		Use:     "cluster CLUSTER_NAME ENVIRONMENT",
+		Use:     "cluster",
 		Example: exampleUsage,
 		Short:   "Scaffold cluster resource template",
 		Long:    "Scaffolds a cluster resource which can be used to control cluster resources",
@@ -33,9 +32,6 @@ func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts.Name = args[0]
-			opts.Environment = args[1]
-
 			t, err := template.New("cluster.yaml").Parse(clusterTemplate)
 			if err != nil {
 				return fmt.Errorf("parsing template string: %w", err)
@@ -51,6 +47,8 @@ func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
 	}
 
 	flags := cmd.Flags()
+	flags.StringVarP(&opts.Name, "name", "n", "my-product-name", usageName)
+	flags.StringVarP(&opts.Environment, "environment", "e", "development", usageEnvironment)
 	flags.StringVarP(&opts.Organization, "github-organization", "o", "oslokommune", usageOrganization)
 	flags.StringVarP(&opts.RepositoryName, "repository-name", "r", "my_iac_repo_name", usageRepository)
 	flags.StringVarP(&opts.AWSAccountID, "aws-account-id", "i", "123456789123", usageAWSAccountID)
@@ -59,6 +57,8 @@ func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
 }
 
 const (
+	usageName         = `the name of the cluster`
+	usageEnvironment  = `the environment for the cluster, for example dev or production`
 	usageAWSAccountID = `the aws account where the resources provisioned by okctl should reside`
 	usageOrganization = `the organization that owns the infrastructure-as-code repository`
 	usageRepository   = `the name of the repository that will contain infrastructure-as-code`
