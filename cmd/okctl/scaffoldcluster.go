@@ -6,7 +6,7 @@ import (
 	"github.com/oslokommune/okctl/pkg/apis/okctl.io/v1alpha1"
 	"github.com/oslokommune/okctl/pkg/okctl"
 	"github.com/spf13/cobra"
-	"sigs.k8s.io/yaml"
+	"text/template"
 )
 
 const scaffoldClusterArgumentQuantity = 2
@@ -36,22 +36,14 @@ func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
 			opts.Name = args[0]
 			opts.Environment = args[1]
 
-			clusterResource := v1alpha1.NewDefaultCluster(
-				opts.Name,
-				opts.Environment,
-				opts.Organization,
-				opts.RepositoryName,
-				opts.AWSAccountID,
-			)
-
-			result, err := yaml.Marshal(clusterResource)
+			t, err := template.New("cluster.yaml").Parse(clusterTemplate)
 			if err != nil {
-				return fmt.Errorf("error marshalling yaml: %w", err)
+				return fmt.Errorf("parsing template string: %w", err)
 			}
 
-			_, err = o.Out.Write(result)
+			err = t.Execute(o.Out, opts)
 			if err != nil {
-				return fmt.Errorf("error writing cluster: %w", err)
+				return fmt.Errorf("interpolating template: %w", err)
 			}
 
 			return nil
@@ -72,3 +64,34 @@ const (
 	usageRepository   = `the name of the repository that will contain infrastructure-as-code`
 	exampleUsage      = `okctl scaffold cluster utviklerportalen production > cluster.yaml`
 )
+
+const clusterTemplate = `apiVersion: okctl.io/v1alpha2
+kind: Cluster
+
+metadata:
+  accountID: {{ .AWSAccountID }}
+  environment: {{ .Environment }}
+  name: {{ .Name }}
+  region: eu-west-1
+
+clusterRootURL: {{ .Name }}-{{ .Environment }}.oslo.systems
+
+github:
+  organisation: {{ .Organization }}
+  outputPath: infrastructure
+  repository: {{ .RepositoryName }}
+
+integrations:
+  argoCD: true
+  autoscaler: true
+  awsLoadBalancerController: true
+  blockstorage: true
+  cognito: true
+  externalDNS: true
+  externalSecrets: true
+  kubePromStack: true
+
+#vpc:
+#  cidr: 192.168.0.0/20
+#  highAvailability: true
+`
