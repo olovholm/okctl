@@ -91,10 +91,10 @@ clusterRootURL: {{ .Name }}-{{ .Environment }}.oslo.systems
 github:
   # The organization that owns the repository
   organisation: {{ .Organization }}
-  # The folder to place infrastructure declarations
-  outputPath: infrastructure
   # The name of the repository
   repository: {{ .RepositoryName }}
+  # The folder to place infrastructure declarations
+  outputPath: infrastructure
 
 integrations:
   # ArgoCD is a service that watches a repository for Kubernetes charts and ensures the defined resources are running
@@ -114,13 +114,23 @@ integrations:
   # External DNS handles defining the necessary DNS records required to route traffic to your defined service or 
   # application
   externalDNS: true
-  # External Secrets automatically AWS secrets  
+  # External Secrets fetches secrets from external sources and exposes them as native Kubernetes secrets inside the
+  # cluster 
   externalSecrets: true
+  # KubePromStack enables Prometheus and Grafana for metrics
   kubePromStack: true
+  # Loki collects logs and exposes them as a data source in Grafana
+  loki: true
+  # Promtail scrapes logs from pods and feeds them to Loki
+  promtail: true
+  # Tempo collects traces and exposes them as a data source in Grafana. Supports formats like jaeger, zipkin, open 
+  # telemetry
+  tempo: true
 
 # okctl creates a Virtual Private Cloud for you which it organizes all the intended resources that require networking.
-#vpc:
+# A VPC is mandatory, but can be configured by the following attributes.
+vpc:
   # CIDR defines the VPC IP range. Leave this be if you don't know what it is/does
-#  cidr: 192.168.0.0/20
-#  highAvailability: true
+  cidr: 192.168.0.0/20
+  highAvailability: true
 `
