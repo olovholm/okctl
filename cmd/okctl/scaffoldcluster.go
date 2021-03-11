@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/oslokommune/okctl/pkg/config"
 	"text/template"
 
 	"github.com/oslokommune/okctl/pkg/okctl"
@@ -13,10 +14,11 @@ const scaffoldClusterArgumentQuantity = 0
 type scaffoldClusterOpts struct {
 	Name string
 
-	AWSAccountID   string
-	Environment    string
-	Organization   string
-	RepositoryName string
+	AWSAccountID    string
+	Environment     string
+	Organization    string
+	RepositoryName  string
+	OutputDirectory string
 }
 
 func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
@@ -52,17 +54,19 @@ func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
 	flags.StringVarP(&opts.Organization, "github-organization", "o", "oslokommune", usageOrganization)
 	flags.StringVarP(&opts.RepositoryName, "repository-name", "r", "my_iac_repo_name", usageRepository)
 	flags.StringVarP(&opts.AWSAccountID, "aws-account-id", "i", "123456789123", usageAWSAccountID)
+	flags.StringVarP(&opts.OutputDirectory, "output-directory", "d", config.DefaultOutputDirectory, usageOutputDirectory)
 
 	return cmd
 }
 
 const (
-	usageName         = `the name of the cluster`
-	usageEnvironment  = `the environment for the cluster, for example dev or production`
-	usageAWSAccountID = `the aws account where the resources provisioned by okctl should reside`
-	usageOrganization = `the organization that owns the infrastructure-as-code repository`
-	usageRepository   = `the name of the repository that will contain infrastructure-as-code`
-	exampleUsage      = `okctl scaffold cluster utviklerportalen production > cluster.yaml`
+	usageName            = `name of the cluster`
+	usageEnvironment     = `environment for the cluster, for example dev or production`
+	usageAWSAccountID    = `aws account where the resources provisioned by okctl should reside`
+	usageOrganization    = `organization that owns the infrastructure-as-code repository`
+	usageRepository      = `name of the repository that will contain infrastructure-as-code`
+	usageOutputDirectory = `name of the directory where okctl will place all infrastructure files`
+	exampleUsage         = `okctl scaffold cluster utviklerportalen production > cluster.yaml`
 )
 
 const clusterTemplate = `apiVersion: okctl.io/v1alpha2
@@ -94,7 +98,7 @@ github:
   # The name of the repository
   repository: {{ .RepositoryName }}
   # The folder to place infrastructure declarations
-  outputPath: infrastructure
+  # outputPath: {{ .OutputDir }}
 
 integrations:
   # ArgoCD is a service that watches a repository for Kubernetes charts and ensures the defined resources are running

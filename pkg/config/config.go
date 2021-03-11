@@ -152,6 +152,10 @@ const (
 	DefaultMaxReconciliationRequeues = 3
 	// DefaultReconciliationRequeueDelay defines the default amount of time between each reconciliation
 	DefaultReconciliationRequeueDelay = 5 * time.Second
+
+	// DefaultClusterCIDR defines the default CIDR to use when creating cluster VPCs
+	DefaultClusterCIDR = "192.168.0.0/20"
+	DefaultOutputDirectory = "infrastructure"
 )
 
 // DataLoaderFn is the type for loading configuration data

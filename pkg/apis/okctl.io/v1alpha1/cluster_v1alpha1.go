@@ -3,6 +3,7 @@ package v1alpha1
 import (
 	"errors"
 	"fmt"
+	"github.com/oslokommune/okctl/pkg/config"
 	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -256,10 +257,10 @@ func NewDefaultCluster(name, env, org, repo, accountID string) Cluster {
 		Github: ClusterGithub{
 			Organisation: org,
 			Repository:   repo,
-			OutputPath:   "infrastructure",
+			OutputPath:   config.DefaultOutputDirectory,
 		},
 		VPC: &ClusterVPC{
-			CIDR:             "192.168.0.0/20",
+			CIDR:             config.DefaultClusterCIDR,
 			HighAvailability: true,
 		},
 		Integrations: &ClusterIntegrations{
