@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/oslokommune/okctl/pkg/config"
 	"text/template"
+
+	"github.com/oslokommune/okctl/pkg/config/constant"
 
 	"github.com/oslokommune/okctl/pkg/okctl"
 	"github.com/spf13/cobra"
@@ -54,7 +55,7 @@ func buildScaffoldClusterCommand(o *okctl.Okctl) *cobra.Command {
 	flags.StringVarP(&opts.Organization, "github-organization", "o", "oslokommune", usageOrganization)
 	flags.StringVarP(&opts.RepositoryName, "repository-name", "r", "my_iac_repo_name", usageRepository)
 	flags.StringVarP(&opts.AWSAccountID, "aws-account-id", "i", "123456789123", usageAWSAccountID)
-	flags.StringVarP(&opts.OutputDirectory, "output-directory", "d", config.DefaultOutputDirectory, usageOutputDirectory)
+	flags.StringVarP(&opts.OutputDirectory, "output-directory", "d", constant.DefaultOutputDirectory, usageOutputDirectory)
 
 	return cmd
 }

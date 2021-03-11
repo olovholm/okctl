@@ -3,10 +3,11 @@ package ask
 
 import (
 	"fmt"
-	"github.com/oslokommune/okctl/pkg/config"
 	"io"
 	"os"
 	"strings"
+
+	"github.com/oslokommune/okctl/pkg/config/constant"
 
 	"github.com/oslokommune/okctl/pkg/spinner"
 
@@ -495,7 +496,7 @@ func (a *Ask) RepositoryConfig() (*RepositoryConfig, error) {
 			Name: "basedir",
 			Prompt: &survey.Input{
 				Message: "Output directory:",
-				Default: config.DefaultOutputDirectory,
+				Default: constant.DefaultOutputDirectory,
 				Help:    "Directory in the repository to store the data in",
 			},
 		},

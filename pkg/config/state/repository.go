@@ -3,7 +3,7 @@ package state
 import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/oslokommune/okctl/pkg/apis/okctl.io/v1alpha1"
-	"github.com/oslokommune/okctl/pkg/config"
+	"github.com/oslokommune/okctl/pkg/config/constant"
 )
 
 const (
@@ -357,7 +357,7 @@ func NewRepository() *Repository {
 	return &Repository{
 		Metadata: Metadata{
 			Region:    v1alpha1.RegionEuWest1,
-			OutputDir: config.DefaultOutputDirectory,
+			OutputDir: constant.DefaultOutputDirectory,
 		},
 		Clusters: map[string]Cluster{},
 	}

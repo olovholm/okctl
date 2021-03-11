@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/oslokommune/okctl/pkg/config"
+	"github.com/oslokommune/okctl/pkg/config/constant"
 
 	"github.com/miekg/dns"
 	"github.com/mishudark/errors"
@@ -56,7 +56,7 @@ func (z *argocdReconciler) Reconcile(node *resourcetree.ResourceNode) (result Re
 	case resourcetree.ResourceNodeStatePresent:
 		repository := client.NewGithubRepository(
 			z.commonMetadata.ClusterID,
-			config.DefaultGithubHost,
+			constant.DefaultGithubHost,
 			z.commonMetadata.Declaration.Github.Organisation,
 			z.commonMetadata.Declaration.Github.Repository,
 		)
