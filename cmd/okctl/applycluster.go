@@ -83,6 +83,11 @@ func buildApplyClusterCommand(o *okctl.Okctl) *cobra.Command {
 				return fmt.Errorf("inferring cluster: %w", err)
 			}
 
+			err = opts.Declaration.Validate()
+			if err != nil {
+				return fmt.Errorf("validating cluster declaration: %w", err)
+			}
+
 			err = loadNoUserInputUserData(o, cmd)
 			if err != nil {
 				return fmt.Errorf("loading application data: %w", err)
@@ -99,11 +104,6 @@ func buildApplyClusterCommand(o *okctl.Okctl) *cobra.Command {
 			)
 			if err != nil {
 				return fmt.Errorf("initializing okctl: %w", err)
-			}
-
-			err = opts.Declaration.Validate()
-			if err != nil {
-				return fmt.Errorf("validating cluster declaration: %w", err)
 			}
 
 			clusterID = api.ID{

@@ -47,3 +47,27 @@ func TestCluster(t *testing.T) {
 		})
 	}
 }
+
+func TestInvalidClusterValidations(t *testing.T) {
+	testCases := []struct {
+		name        string
+		withCluster v1alpha1.Cluster
+		expectError bool
+	}{
+		{
+			name: "Should work",
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.withCluster.Validate()
+			if tc.expectError {
+
+			}
+
+			assert.Errorf(t, err, "lol")
+		})
+	}
+
+}
