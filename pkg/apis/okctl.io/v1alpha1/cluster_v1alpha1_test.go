@@ -1,6 +1,7 @@
 package v1alpha1_test
 
 import (
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -48,26 +49,51 @@ func TestCluster(t *testing.T) {
 	}
 }
 
+func newPassingCluster() v1alpha1.Cluster {
+	return v1alpha1.NewDefaultCluster(
+		"x",
+		"tre",
+		"x",
+		"x",
+		"000000000000",
+	)
+}
+
 func TestInvalidClusterValidations(t *testing.T) {
 	testCases := []struct {
 		name        string
-		withCluster v1alpha1.Cluster
-		expectError bool
+		withCluster func() v1alpha1.Cluster
+		expectError string
 	}{
 		{
-			name: "Should work",
+			name: "Should pass when everything is A-ok",
+			withCluster: func() v1alpha1.Cluster {
+				return newPassingCluster()
+			},
+			expectError: "",
+		},
+		{
+			name: "Should fail when name is empty",
+			withCluster: func() v1alpha1.Cluster {
+				c := newPassingCluster()
+				
+				c.Metadata.Name = ""
+
+				return c
+			},
+			expectError: "",
 		},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.withCluster.Validate()
-			if tc.expectError {
-
+			err := tc.withCluster().Validate()
+			
+			if tc.expectError != "" {
+				assert.ErrorAs(t, err, testerr)
+			} else {
+				assert.NoError(t, err)
 			}
-
-			assert.Errorf(t, err, "lol")
 		})
 	}
-
 }
