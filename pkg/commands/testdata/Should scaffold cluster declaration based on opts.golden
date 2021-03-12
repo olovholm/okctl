@@ -10,7 +10,7 @@ metadata:
   # Name can be anything, but should define the scope of the cluster. Meaning if the cluster is scoped to one product,
   # you might want to name it the name of the product. If the cluster contains all services and products owned by a
   # team, the team name might be more fitting.
-  name: SomeClusterName
+  name: someclustername
   # Region defines the AWS region to prefer when creating resources
   # region: eu-west-1
 
@@ -60,9 +60,9 @@ integrations:
   # telemetry
   tempo: true
 
-# okctl creates a Virtual Private Cloud for you which it organizes all the intended resources that require networking.
-# A VPC is mandatory, but can be configured by the following attributes.
-# vpc:
+## okctl creates a Virtual Private Cloud for you which it organizes all the intended resources that require networking.
+## A VPC is mandatory, but can be configured by the following attributes.
+#vpc:
 #  # CIDR defines the VPC IP range. Leave this be if you don't know what it is/does
 #  cidr: 192.168.0.0/20
 #  highAvailability: true

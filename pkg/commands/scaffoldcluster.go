@@ -3,9 +3,11 @@ package commands
 import (
 	"fmt"
 	"io"
+	"strings"
 	"text/template"
 )
 
+// ScaffoldClusterOpts contains attributes used in a cluster declaration
 type ScaffoldClusterOpts struct {
 	Name string
 
@@ -16,18 +18,32 @@ type ScaffoldClusterOpts struct {
 	OutputDirectory string
 }
 
+// ScaffoldClusterDeclaration scaffolds a cluster declaration based on ScaffoldClusterOpts
 func ScaffoldClusterDeclaration(out io.Writer, opts ScaffoldClusterOpts) error {
+	sanitizedOpts := sanitizeOpts(opts)
+
 	t, err := template.New("cluster.yaml").Parse(clusterTemplate)
 	if err != nil {
 		return fmt.Errorf("parsing template string: %w", err)
 	}
 
-	err = t.Execute(out, opts)
+	err = t.Execute(out, sanitizedOpts)
 	if err != nil {
 		return fmt.Errorf("interpolating template: %w", err)
 	}
 
 	return nil
+}
+
+func sanitizeOpts(opts ScaffoldClusterOpts) ScaffoldClusterOpts {
+	return ScaffoldClusterOpts{
+		Name:            strings.ToLower(opts.Name),
+		AWSAccountID:    opts.AWSAccountID,
+		Environment:     strings.ToLower(opts.Environment),
+		Organization:    opts.Organization,
+		RepositoryName:  opts.RepositoryName,
+		OutputDirectory: opts.OutputDirectory,
+	}
 }
 
 const clusterTemplate = `apiVersion: okctl.io/v1alpha2
@@ -44,7 +60,7 @@ metadata:
   # team, the team name might be more fitting.
   name: {{ .Name }}
   # Region defines the AWS region to prefer when creating resources
-  region: eu-west-1
+  # region: eu-west-1
 
 # The cluster root URL defines the domain of which to create services beneath. For example; okctl will setup ArgoCD
 # which has a frontend. The frontend will be available at https://argocd.<clusterRootURL>. For Cognito it will be 
@@ -54,10 +70,10 @@ clusterRootURL: {{ .Name }}-{{ .Environment }}.oslo.systems
 # For okctl to be able to setup ArgoCD correctly for you, it needs to know what repository on Github that will contain
 # your infrastructure.
 github:
-  # The organization that owns the repository
-  organisation: {{ .Organization }}
   # The name of the repository
   repository: {{ .RepositoryName }}
+  # The organization that owns the repository
+  # organisation: {{ .Organization }}
   # The folder to place infrastructure declarations
   # outputPath: {{ .OutputDirectory }}
 
@@ -92,10 +108,10 @@ integrations:
   # telemetry
   tempo: true
 
-# okctl creates a Virtual Private Cloud for you which it organizes all the intended resources that require networking.
-# A VPC is mandatory, but can be configured by the following attributes.
-vpc:
-  # CIDR defines the VPC IP range. Leave this be if you don't know what it is/does
-  cidr: 192.168.0.0/20
-  highAvailability: true
+## okctl creates a Virtual Private Cloud for you which it organizes all the intended resources that require networking.
+## A VPC is mandatory, but can be configured by the following attributes.
+#vpc:
+#  # CIDR defines the VPC IP range. Leave this be if you don't know what it is/does
+#  cidr: 192.168.0.0/20
+#  highAvailability: true
 `

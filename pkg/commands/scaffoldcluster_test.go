@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestName(t *testing.T) {
+func TestClusterDeclarationScaffold(t *testing.T) {
 	testCases := []struct {
 		name string
 
