@@ -1,14 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
+	"github.com/oslokommune/okctl/pkg/commands"
+	"github.com/oslokommune/okctl/pkg/context"
 	"io"
 	"io/ioutil"
-	"os"
-	"path/filepath"
-
-	"github.com/oslokommune/okctl/pkg/context"
 
 	"github.com/logrusorgru/aurora"
 
@@ -78,7 +75,7 @@ func buildApplyClusterCommand(o *okctl.Okctl) *cobra.Command {
 			o.AWSCredentialsType = opts.AWSCredentialsType
 			o.GithubCredentialsType = opts.GithubCredentialsType
 
-			opts.Declaration, err = inferClusterFromStdinOrFile(o.In, opts.File)
+			opts.Declaration, err = commands.InferClusterFromStdinOrFile(o.In, opts.File)
 			if err != nil {
 				return fmt.Errorf("inferring cluster: %w", err)
 			}
@@ -232,42 +229,6 @@ func buildApplyClusterCommand(o *okctl.Okctl) *cobra.Command {
 }
 
 const usageApplyClusterFile = `specifies where to read the declaration from. Use "-" for stdin`
-
-func inferClusterFromStdinOrFile(stdin io.Reader, path string) (*v1alpha1.Cluster, error) {
-	var (
-		inputReader io.Reader
-		err         error
-	)
-
-	switch path {
-	case "-":
-		inputReader = stdin
-	default:
-		inputReader, err = os.Open(filepath.Clean(path))
-		if err != nil {
-			return nil, fmt.Errorf("unable to read file: %w", err)
-		}
-	}
-
-	var (
-		buffer  bytes.Buffer
-		cluster v1alpha1.Cluster
-	)
-
-	cluster = v1alpha1.NewDefaultCluster("", "", "", "", "")
-
-	_, err = io.Copy(&buffer, inputReader)
-	if err != nil {
-		return nil, fmt.Errorf("copying reader data: %w", err)
-	}
-
-	err = yaml.Unmarshal(buffer.Bytes(), &cluster)
-	if err != nil {
-		return nil, fmt.Errorf("unmarshalling buffer: %w", err)
-	}
-
-	return &cluster, nil
-}
 
 // ~/.okctl.yaml
 func loadNoUserInputUserData(o *okctl.Okctl, cmd *cobra.Command) error {
