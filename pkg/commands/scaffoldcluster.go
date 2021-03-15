@@ -46,7 +46,7 @@ func sanitizeOpts(opts ScaffoldClusterOpts) ScaffoldClusterOpts {
 	}
 }
 
-const clusterTemplate = `apiVersion: okctl.io/v1alpha2
+const clusterTemplate = `apiVersion: okctl.io/v1alpha1
 kind: Cluster
 
 # For help finding values, see https://okctl.io/getting-started/create-cluster

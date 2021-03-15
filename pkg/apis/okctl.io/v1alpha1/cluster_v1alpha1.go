@@ -17,7 +17,7 @@ const (
 	// ClusterKind is a string value that represents the resource type
 	ClusterKind = "Cluster"
 	// ClusterAPIVersion defines the versioned schema of this representation
-	ClusterAPIVersion = "okctl.io/v1alpha2"
+	ClusterAPIVersion = "okctl.io/v1alpha1"
 )
 
 // Cluster is a unique Kubernetes cluster with a set of integrations that
