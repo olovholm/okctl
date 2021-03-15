@@ -34,6 +34,7 @@ const (
 	DefaultChartRemoveTimeout = 5 * time.Minute
 
 	DefaultGithubHost                     = "git@github.com"
+	DefaultGithubOrganization             = "oslokommune"
 	DefaultArgoCDNamespace                = "argocd"
 	DefaultMonitoringNamespace            = "monitoring"
 	DefaultKubePrometheusStackGrafanaName = "kube-prometheus-stack-grafana"
