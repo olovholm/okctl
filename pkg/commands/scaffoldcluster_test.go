@@ -26,6 +26,7 @@ func TestClusterDeclarationScaffold(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -38,4 +39,24 @@ func TestClusterDeclarationScaffold(t *testing.T) {
 			g.Assert(t, tc.name, buf.Bytes())
 		})
 	}
+}
+
+func TestEnsureValidDefaultTemplate(t *testing.T) {
+	var buf bytes.Buffer
+
+	err := ScaffoldClusterDeclaration(&buf, ScaffoldClusterOpts{
+		Name:            "name",
+		AWSAccountID:    "123456789012",
+		Environment:     "test",
+		Organization:    "oslokommune",
+		RepositoryName:  "my_iac_repo",
+		OutputDirectory: "infrastructure",
+	})
+	assert.NoError(t, err)
+
+	cluster, err := InferClusterFromStdinOrFile(&buf, "-")
+	assert.NoError(t, err)
+
+	err = cluster.Validate()
+	assert.NoError(t, err)
 }
