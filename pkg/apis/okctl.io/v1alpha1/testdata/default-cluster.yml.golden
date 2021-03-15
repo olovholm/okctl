@@ -1,4 +1,4 @@
-apiVersion: okctl.io/v1alpha2
+apiVersion: okctl.io/v1alpha1
 clusterRootURL: okctl-stage.oslo.systems
 github:
   organisation: oslokommune

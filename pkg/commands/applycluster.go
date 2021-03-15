@@ -3,11 +3,13 @@ package commands
 import (
 	"bytes"
 	"fmt"
-	"github.com/oslokommune/okctl/pkg/apis/okctl.io/v1alpha1"
-	"github.com/oslokommune/okctl/pkg/config/constant"
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/oslokommune/okctl/pkg/apis/okctl.io/v1alpha1"
+	"github.com/oslokommune/okctl/pkg/config/constant"
+
 	"sigs.k8s.io/yaml"
 )
 

@@ -65,10 +65,8 @@ func TestInvalidClusterValidations(t *testing.T) {
 		expectError string
 	}{
 		{
-			name: "Should pass when everything is A-ok",
-			withCluster: func() v1alpha1.Cluster {
-				return newPassingCluster()
-			},
+			name:        "Should pass when everything is A-ok",
+			withCluster: newPassingCluster,
 			expectError: "",
 		},
 		{

@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/oslokommune/okctl/pkg/commands"
-	"github.com/oslokommune/okctl/pkg/context"
 	"io"
 	"io/ioutil"
+
+	"github.com/oslokommune/okctl/pkg/commands"
+	"github.com/oslokommune/okctl/pkg/context"
 
 	"github.com/logrusorgru/aurora"
 

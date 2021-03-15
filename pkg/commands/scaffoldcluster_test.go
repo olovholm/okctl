@@ -2,9 +2,10 @@ package commands
 
 import (
 	"bytes"
+	"testing"
+
 	"github.com/sebdah/goldie/v2"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestClusterDeclarationScaffold(t *testing.T) {

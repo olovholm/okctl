@@ -1,10 +1,10 @@
-apiVersion: okctl.io/v1alpha2
+apiVersion: okctl.io/v1alpha1
 kind: Cluster
 
 # For help finding values, see https://okctl.io/getting-started/create-cluster
 metadata:
   # Account ID is your AWS account ID
-  accountID: 123456789012
+  accountID: '123456789012'
   # Environment is the name you use to identify the type of cluster it is. Common names are production, test, staging
   environment: production
   # Name can be anything, but should define the scope of the cluster. Meaning if the cluster is scoped to one product,
