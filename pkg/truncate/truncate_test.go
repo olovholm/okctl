@@ -39,6 +39,7 @@ func TestTruncate(t *testing.T) {
 			expected:  "1234567890",
 		},
 	}
+
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -54,4 +55,11 @@ func TestTruncate(t *testing.T) {
 			assert.Equal(t, expectedBytes, truncatedBytes)
 		})
 	}
+}
+
+func TestTruncateNil(t *testing.T) {
+	t.Run("Should return empty values if receiving nil", func(t *testing.T) {
+		assert.Equal(t, "", truncate.String(nil, 5))
+		assert.Equal(t, []byte{}, truncate.Bytes(nil, 5))
+	})
 }
