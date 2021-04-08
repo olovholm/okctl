@@ -3,7 +3,6 @@ package logger
 
 import (
 	"context"
-	"github.com/oslokommune/okctl/pkg/truncate"
 	"strings"
 	"time"
 
@@ -80,8 +79,9 @@ func (l *logging) ProcessResponse(err error, response interface{}, begin time.Ti
 			d = litter.Sdump(response)
 		}
 
-		truncatedDump := truncate.String(&d, 5000)
-		l.log.Trace("response: ", truncatedDump)
+		// truncatedDump := truncate.String(&d, 5000)
+		// l.log.Trace("response: ", truncatedDump)
+		l.log.Trace("response: ", d)
 	}
 
 	l.log.Debug("request completed in: ", time.Since(begin).String())
