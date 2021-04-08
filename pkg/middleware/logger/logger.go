@@ -3,10 +3,9 @@ package logger
 
 import (
 	"context"
+	"github.com/oslokommune/okctl/pkg/truncate"
 	"strings"
 	"time"
-
-	"github.com/oslokommune/okctl/pkg/truncate"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/sanity-io/litter"
