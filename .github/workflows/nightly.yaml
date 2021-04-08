@@ -50,10 +50,10 @@ jobs:
             cognito: true
             externalDNS: true
             externalSecrets: true
-            kubePromStack: true
-            loki: true
-            promtail: true
-            tempo: true
+            kubePromStack: false
+            loki: false
+            promtail: false
+            tempo: false
           EOF
         env:
           OKCTL_DEBUG: true
