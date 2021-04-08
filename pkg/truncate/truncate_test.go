@@ -18,13 +18,13 @@ func TestTruncate(t *testing.T) {
 			name:      "Should truncate string",
 			input:     "1234567890",
 			maxLength: 5,
-			expected:  "12345 [truncated 5 bytes]",
+			expected:  "12345 XXX truncated 5 bytes XXX",
 		},
 		{
 			name:      "Should truncate some other string",
 			input:     "1234567890",
 			maxLength: 7,
-			expected:  "1234567 [truncated 3 bytes]",
+			expected:  "1234567 XXX truncated 3 bytes XXX",
 		},
 		{
 			name:      "Should keep string if it's equal to maxLength",
