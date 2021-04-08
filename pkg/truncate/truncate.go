@@ -16,7 +16,7 @@ func String(s *string, maxLength int) string {
 
 	if len(*s) > truncateLength {
 		bytesTruncated := len(*s) - truncateLength
-		truncated += fmt.Sprintf(" XXX truncated %d bytes XXX", bytesTruncated)
+		truncated += fmt.Sprintf("XXXtruncated%dbytesXXX", bytesTruncated)
 	}
 
 	return truncated
@@ -34,7 +34,7 @@ func Bytes(b []byte, maxLength int) []byte {
 
 	if len(b) > truncateLength {
 		bytesTruncated := len(b) - truncateLength
-		truncateInfo := fmt.Sprintf(" XXX truncated %d bytes XXX", bytesTruncated)
+		truncateInfo := fmt.Sprintf("XXXtruncated%dbytesXXX", bytesTruncated)
 		truncated = append(truncated, truncateInfo...)
 	}
 
