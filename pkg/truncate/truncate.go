@@ -3,6 +3,8 @@ package truncate
 
 import "fmt"
 
+const truncateFormat = "XXXtruncated%dbytesXXX"
+
 // String truncates a string to the minimum of its length and the given max length
 func String(s *string, maxLength int) string {
 	if s == nil {
@@ -16,7 +18,7 @@ func String(s *string, maxLength int) string {
 
 	if len(*s) > truncateLength {
 		bytesTruncated := len(*s) - truncateLength
-		truncated += fmt.Sprintf("XXXtruncated%dbytesXXX", bytesTruncated)
+		truncated += fmt.Sprintf(truncateFormat, bytesTruncated)
 	}
 
 	return truncated
@@ -34,7 +36,7 @@ func Bytes(b []byte, maxLength int) []byte {
 
 	if len(b) > truncateLength {
 		bytesTruncated := len(b) - truncateLength
-		truncateInfo := fmt.Sprintf("XXXtruncated%dbytesXXX", bytesTruncated)
+		truncateInfo := fmt.Sprintf(truncateFormat, bytesTruncated)
 		truncated = append(truncated, truncateInfo...)
 	}
 
