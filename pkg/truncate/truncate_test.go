@@ -63,3 +63,14 @@ func TestTruncateNil(t *testing.T) {
 		assert.Equal(t, []byte{}, truncate.Bytes(nil, 5))
 	})
 }
+
+func TestTruncateSideEffects(t *testing.T) {
+	t.Run("Should not modify original byte array", func(t *testing.T) {
+		b := []byte("hello")
+		expected := []byte("hello")
+
+		truncate.Bytes(b, 3)
+
+		assert.Equal(t, expected, b)
+	})
+}
