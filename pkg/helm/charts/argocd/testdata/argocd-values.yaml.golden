@@ -2,20 +2,30 @@ installCRDs: false
 global:
     image:
         repository: argoproj/argocd
-        tag: v1.7.2
+        tag: v1.8.4
         imagePullPolicy: IfNotPresent
     securityContext:
-        runAsNonRoot: true
         runAsGroup: 999
         runAsUser: 999
         fsGroup: 999
 controller:
     name: application-controller
+    replicas: 1
+    enableStatefulSet: false
     args:
         statusProcessors: "20"
         operationProcessors: "10"
         appResyncPeriod: "180"
+        selfHealTimeout: "5"
+    logFormat: text
     logLevel: info
+    extraArgs: []
+    env:
+        []
+    podAnnotations: {}
+    podLabels: {}
+    containerSecurityContext:
+        {}
     containerPort: 8082
     readinessProbe:
         failureThreshold: 3
@@ -29,7 +39,11 @@ controller:
         periodSeconds: 10
         successThreshold: 1
         timeoutSeconds: 1
+    volumeMounts: []
+    volumes: []
     service:
+        annotations: {}
+        labels: {}
         port: 8082
         portName: https-controller
     resources:
@@ -42,18 +56,32 @@ controller:
     serviceAccount:
         create: true
         name: argocd-application-controller
+        annotations: {}
+        automountServiceAccountToken: true
     clusterAdminAccess:
         enabled: true
 dex:
     enabled: true
     name: dex-server
+    metrics:
+        enabled: false
+        service:
+            annotations: {}
+            labels: {}
+        serviceMonitor:
+            enabled: false
     image:
         repository: quay.io/dexidp/dex
         tag: v2.26.0
         imagePullPolicy: IfNotPresent
+    env: []
+    podAnnotations: {}
+    podLabels: {}
     serviceAccount:
         create: true
         name: argocd-dex-server
+        annotations: {}
+        automountServiceAccountToken: true
     volumeMounts:
         - name: static-files
           mountPath: /shared
@@ -64,6 +92,14 @@ dex:
     servicePortHttp: 5556
     containerPortGrpc: 5557
     servicePortGrpc: 5557
+    containerPortMetrics: 5558
+    servicePortMetrics: 5558
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    priorityClassName: ""
+    containerSecurityContext:
+        {}
     resources:
         limits:
             cpu: 50m
@@ -74,17 +110,26 @@ dex:
 redis:
     enabled: true
     name: redis
-    containerPort: 6379
-    servicePort: 6379
     image:
         repository: redis
-        tag: 5.0.8
+        tag: 5.0.10-alpine
         imagePullPolicy: IfNotPresent
+    containerPort: 6379
+    servicePort: 6379
+    env: []
+    podAnnotations: {}
+    podLabels: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    priorityClassName: ""
+    containerSecurityContext:
+        {}
     securityContext:
-        runAsNonRoot: true
-        runAsGroup: 1000
         runAsUser: 1000
+        runAsGroup: 1000
         fsGroup: 1000
+        runAsNonRoot: true
     resources:
         limits:
             cpu: 200m
@@ -103,7 +148,12 @@ server:
         targetMemoryUtilizationPercentage: 50
     extraArgs:
         - --insecure
+    env: []
+    lifecycle: {}
+    logFormat: text
     logLevel: info
+    podAnnotations: {}
+    podLabels: {}
     containerPort: 8080
     readinessProbe:
         failureThreshold: 3
@@ -130,17 +180,23 @@ server:
         annotations: {}
         labels: {}
         type: NodePort
+        nodePortHttp: 30080
+        nodePortHttps: 30443
         servicePortHttp: 80
         servicePortHttps: 443
         servicePortHttpName: http
         servicePortHttpsName: https
+        namedTargetPort: true
         loadBalancerIP: ""
         loadBalancerSourceRanges: []
+        externalIPs: []
     metrics:
         enabled: false
     serviceAccount:
         create: true
         name: argocd-server
+        annotations: {}
+        automountServiceAccountToken: true
     ingress:
         enabled: true
         annotations:
@@ -166,6 +222,7 @@ server:
         enabled: false
     route:
         enabled: false
+    configEnabled: true
     config:
         url: https://argocd.test.oslo.systems
         users.anonymous.enabled: "false"
@@ -199,8 +256,11 @@ server:
         policy.csv: |
             g, admins, role:admin
         scopes: '[email, groups]'
+    rbacConfigCreate: true
     clusterAdminAccess:
         enabled: true
+    GKEbackendConfig:
+        enabled: false
 repoServer:
     name: repo-server
     replicas: 1
@@ -210,6 +270,7 @@ repoServer:
         maxReplicas: 5
         targetCPUUtilizationPercentage: 50
         targetMemoryUtilizationPercentage: 50
+    logFormat: text
     logLevel: info
     containerPort: 8081
     readinessProbe:
@@ -239,6 +300,7 @@ repoServer:
     serviceAccount:
         create: false
         name: ""
+        automountServiceAccountToken: true
 configs:
     knownHosts.data.ssh_known_hosts: |
         bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==
@@ -249,3 +311,6 @@ configs:
         ssh.dev.azure.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7Hr1oTWqNqOlzGJOfGJ4NakVyIzf1rXYd4d7wo6jBlkLvCA4odBlL0mDUyZ0/QUfTTqeu+tm22gOsv+VrVTMk6vwRU75gY/y9ut5Mb3bR5BV58dKXyq9A9UeB5Cakehn5Zgm6x1mKoVyf+FFn26iYqXJRgzIZZcZ5V6hrE0Qg39kZm4az48o0AUbf6Sp4SLdvnuMa2sVNwHBboS7EJkm57XQPVU3/QpyNLHbWDdzwtrlS+ez30S3AdYhLKEOxAG8weOnyrtLJAUen9mTkol8oII1edf7mWWbWVf0nBmly21+nZcmCTISQBtdcyPaEno7fFQMDD26/s0lfKob4Kw8H
         vs-ssh.visualstudio.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7Hr1oTWqNqOlzGJOfGJ4NakVyIzf1rXYd4d7wo6jBlkLvCA4odBlL0mDUyZ0/QUfTTqeu+tm22gOsv+VrVTMk6vwRU75gY/y9ut5Mb3bR5BV58dKXyq9A9UeB5Cakehn5Zgm6x1mKoVyf+FFn26iYqXJRgzIZZcZ5V6hrE0Qg39kZm4az48o0AUbf6Sp4SLdvnuMa2sVNwHBboS7EJkm57XQPVU3/QpyNLHbWDdzwtrlS+ez30S3AdYhLKEOxAG8weOnyrtLJAUen9mTkol8oII1edf7mWWbWVf0nBmly21+nZcmCTISQBtdcyPaEno7fFQMDD26/s0lfKob4Kw8H
     secret.createSecret: false
+
+openshift:
+  enabled: false

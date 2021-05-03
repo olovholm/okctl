@@ -220,6 +220,8 @@ func (s *argoCDService) CreateArgoCD(ctx context.Context, opts client.CreateArgo
 		return nil, fmt.Errorf("creating external secret for IdentityPool client: %w", err)
 	}
 
+	chart := argocd.New(argocd.NewDefaultValues())
+
 	chart := argocd.New(argocd.NewDefaultValues(argocd.ValuesOpts{
 		URL:                  fmt.Sprintf("https://%s", cert.Domain),
 		HostName:             cert.Domain,

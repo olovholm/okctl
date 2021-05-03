@@ -4,9 +4,12 @@
 package argocd
 
 import (
+	"bytes"
 	"fmt"
+	"text/template"
 	"time"
 
+	_ "embed"
 	"github.com/oslokommune/okctl/pkg/helm"
 )
 
@@ -23,7 +26,7 @@ func New(values *Values, timeout time.Duration) *helm.Chart {
 		RepositoryName: "argo",
 		RepositoryURL:  "https://argoproj.github.io/argo-helm",
 		ReleaseName:    ReleaseName,
-		Version:        "2.6.2",
+		Version:        "3.3.5",
 		Chart:          "argo-cd",
 		Namespace:      Namespace,
 		Timeout:        timeout,
@@ -49,13 +52,19 @@ type ValuesOpts struct {
 
 // NewDefaultValues returns the default values for the chart
 //nolint:gomnd,funlen,lll
+//func NewDefaultValues() *Values {
+//	return &Values{}
+//}
+
+// NewDefaultValues returns the default values for the chart
+//nolint:gomnd,funlen,lll
 func NewDefaultValues(opts ValuesOpts) *Values {
 	return &Values{
 		InstallCRDs: false,
 		Global: global{
 			Image: image{
 				Repository: "argoproj/argocd",
-				Tag:        "v1.7.2",
+				Tag:        "v1.8.4",
 				PullPolicy: "IfNotPresent",
 			},
 			SecurityContext: securityContext{
@@ -336,6 +345,26 @@ func NewDefaultValues(opts ValuesOpts) *Values {
 	}
 }
 
+//go:embed values.yaml
+var valuesTemplate string
+
+// RawYAML implements the raw marshaller interface in the Helm package
+func (v *Values) RawYAML() ([]byte, error) {
+	tmpl, err := template.New("values").Parse(valuesTemplate)
+	if err != nil {
+		return nil, err
+	}
+
+	var buff bytes.Buffer
+
+	err = tmpl.Execute(&buff, *v)
+	if err != nil {
+		return nil, err
+	}
+
+	return buff.Bytes(), nil
+}
+
 // nolint: lll
 const sshKnownHosts = `bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==
 github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
@@ -585,6 +614,7 @@ type serviceAccount struct {
 type global struct {
 	Image           image           `yaml:"image"`
 	SecurityContext securityContext `yaml:"securityContext"`
+	//ImagePullSecret imagePullSecrets `yaml:imagePullSecret`
 }
 
 type image struct {
