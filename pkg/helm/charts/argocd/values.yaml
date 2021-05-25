@@ -1,6 +1,9 @@
 ## ArgoCD configuration
 ## Ref: https://github.com/argoproj/argo-cd
 ##
+## ArgoCD configuration
+## Ref: https://github.com/argoproj/argo-cd
+##
 nameOverride: argocd
 fullnameOverride: ""
 
@@ -9,13 +12,13 @@ installCRDs: true
 
 global:
   image:
-    repository: argoproj/argocd
-    tag: v1.8.4
+    repository: quay.io/argoproj/argocd
+    tag: v2.0.1
     imagePullPolicy: IfNotPresent
-  securityContext:
-    runAsUser: 999
-    runAsGroup: 999
-    fsGroup: 999
+  securityContext: {}
+  #  runAsUser: 999
+  #  runAsGroup: 999
+  #  fsGroup: 999
   imagePullSecrets: []
   hostAliases: []
   # - ip: 10.20.30.40
@@ -27,8 +30,8 @@ controller:
   name: application-controller
 
   image:
-    repository: # argoproj/argocd
-    tag: # v1.7.11
+    repository: # defaults to global.image.repository
+    tag: # defaults to global.image.tag
     imagePullPolicy: # IfNotPresent
 
   # If changing the number of replicas you must pass the number as ARGOCD_CONTROLLER_REPLICAS as an environment variable
@@ -118,13 +121,13 @@ controller:
 
   priorityClassName: ""
 
-  resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 250m
-      memory: 256Mi
+  resources: {}
+  #  limits:
+  #    cpu: 500m
+  #    memory: 512Mi
+  #  requests:
+  #    cpu: 250m
+  #    memory: 256Mi
 
   serviceAccount:
     create: true
@@ -183,6 +186,13 @@ controller:
   ## Enable if you would like to grant rights to ArgoCD to deploy to the local Kubernetes cluster.
   clusterAdminAccess:
     enabled: true
+  ## Enable Custom Rules for the Application Controller's Cluster Role resource
+  ## Enable this and set the rules: to whatever custom rules you want for the Cluster Role resource.
+  ## Defaults to off
+  clusterRoleRules:
+    enabled: false
+    rules: []
+
 
 ## Dex
 dex:
@@ -201,10 +211,10 @@ dex:
     repository: quay.io/dexidp/dex
     tag: v2.26.0
     imagePullPolicy: IfNotPresent
-  #initImage:
-  #  repository:
-  #  tag:
-  #  imagePullPolicy:
+  initImage:
+    repository:
+    tag:
+    imagePullPolicy:
 
   ## Environment variables to pass to the Dex server
   ##
@@ -261,13 +271,13 @@ dex:
     #     - all
   # readOnlyRootFilesystem: true
 
-  resources:
-    limits:
-      cpu: 50m
-      memory: 64Mi
-    requests:
-      cpu: 10m
-      memory: 32Mi
+  resources: {}
+  #  limits:
+  #    cpu: 50m
+  #    memory: 64Mi
+  #  requests:
+  #    cpu: 10m
+  #    memory: 32Mi
 
 ## Redis
 redis:
@@ -276,8 +286,14 @@ redis:
 
   image:
     repository: redis
-    tag: 5.0.10-alpine
+    tag: 6.2.2-alpine
     imagePullPolicy: IfNotPresent
+
+  ## Additional command line arguments to pass to redis-server
+  ##
+  extraArgs: []
+  # - --bind
+  # - "0.0.0.0"
 
   containerPort: 6379
   servicePort: 6379
@@ -318,13 +334,13 @@ redis:
     fsGroup: 1000
     runAsNonRoot: true
 
-  resources:
-    limits:
-      cpu: 200m
-      memory: 128Mi
-    requests:
-      cpu: 100m
-      memory: 64Mi
+  resources: {}
+  #  limits:
+  #    cpu: 200m
+  #    memory: 128Mi
+  #  requests:
+  #    cpu: 100m
+  #    memory: 64Mi
 
   volumeMounts: []
   volumes: []
@@ -347,7 +363,7 @@ redis-ha:
     metrics:
       enabled: true
   image:
-    tag: 5.0.8-alpine
+    tag: 6.2.2-alpine
 
 ## Server
 server:
@@ -362,15 +378,15 @@ server:
     targetCPUUtilizationPercentage: 50
     targetMemoryUtilizationPercentage: 50
 
-  #image:
-  #  repository: # argoproj/argocd
-  #  tag: # v1.7.11
-  #  imagePullPolicy: # IfNotPresent
+  image:
+    repository: # defaults to global.image.repository
+    tag: # defaults to global.image.tag
+    imagePullPolicy: # IfNotPresent
 
   ## Additional command line arguments to pass to argocd-server
   ##
-  extraArgs:
-    - --insecure
+  extraArgs: []
+  #  - --insecure
 
   ## Environment variables to pass to argocd-server
   ##
@@ -435,13 +451,13 @@ server:
     #     - all
   # readOnlyRootFilesystem: true
 
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      cpu: 50m
-      memory: 64Mi
+  resources: {}
+  #  limits:
+  #    cpu: 100m
+  #    memory: 128Mi
+  #  requests:
+  #    cpu: 50m
+  #    memory: 64Mi
 
   ## Certificate configuration
   certificate:
@@ -454,7 +470,7 @@ server:
   service:
     annotations: {}
     labels: {}
-    type: NodePort
+    type: ClusterIP
     ## For node port default ports
     nodePortHttp: 30080
     nodePortHttps: 30443
@@ -466,6 +482,7 @@ server:
     loadBalancerIP: ""
     loadBalancerSourceRanges: []
     externalIPs: []
+    externalTrafficPolicy: ""
 
   ## Server metrics service configuration
   metrics:
@@ -490,9 +507,10 @@ server:
     automountServiceAccountToken: true
 
   ingress:
-    enabled: true
+    enabled: false
     annotations: {}
     labels: {}
+    ingressClassName: ""
 
     ## Argo Ingress.
     ## Hostnames must be provided if Ingress is enabled.
@@ -521,6 +539,7 @@ server:
     enabled: false
     annotations: {}
     labels: {}
+    ingressClassName: ""
 
     ## Argo Ingress.
     ## Hostnames must be provided if Ingress is enabled.
@@ -731,8 +750,8 @@ repoServer:
     targetMemoryUtilizationPercentage: 50
 
   image:
-    repository: # argoproj/argocd
-    tag: # v1.7.11
+    repository: # defaults to global.image.repository
+    tag: # defaults to global.image.tag
     imagePullPolicy: # IfNotPresent
 
   ## Additional command line arguments to pass to argocd-repo-server
@@ -872,6 +891,31 @@ repoServer:
 
 ## Argo Configs
 configs:
+  ## External Cluster Credentials
+  ## reference:
+  ## - https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/#clusters
+  ## - https://argoproj.github.io/argo-cd/operator-manual/security/#external-cluster-credentials
+  clusterCredentials: []
+    # - name: mycluster
+    #   server: https://mycluster.com
+    #   labels: {}
+    #   annotations: {}
+    #   config:
+    #     bearerToken: "<authentication token>"
+    #     tlsClientConfig:
+    #       insecure: false
+    #       caData: "<base64 encoded certificate>"
+    # - name: mycluster2
+    #   server: https://mycluster2.com
+    #   labels: {}
+    #   annotations: {}
+    #   namespaces: namespace1,namespace2
+    #   config:
+    #     bearerToken: "<authentication token>"
+    #     tlsClientConfig:
+    #       insecure: false
+  #       caData: "<base64 encoded certificate>"
+
   knownHostsAnnotations: {}
   knownHosts:
     data:
@@ -975,9 +1019,16 @@ configs:
 
     # Argo expects the password in the secret to be bcrypt hashed. You can create this hash with
     # `htpasswd -nbBC 10 "" $ARGO_PWD | tr -d ':\n' | sed 's/$2y/$2a/'`
-    # argocdServerAdminPassword:
+    # argocdServerAdminPassword: ""
     # Password modification time defaults to current time if not set
     # argocdServerAdminPasswordMtime: "2006-01-02T15:04:05Z"
+
+  ## Custom CSS Styles
+  ## Reference: https://argo-cd.readthedocs.io/en/stable/operator-manual/custom-styles/
+  # styles: |
+  #  .nav-bar {
+  #    background: linear-gradient(to bottom, #999, #777, #333, #222, #111);
+  #  }
 
 openshift:
   enabled: false
