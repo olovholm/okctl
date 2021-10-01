@@ -4,8 +4,8 @@ package mock
 import (
 	"context"
 	"fmt"
-
 	"github.com/oslokommune/okctl/pkg/apis/eksctl.io/v1alpha5"
+	"github.com/oslokommune/okctl/pkg/version"
 
 	"github.com/oslokommune/okctl/pkg/api"
 	"github.com/oslokommune/okctl/pkg/apis/okctl.io/v1alpha1"
@@ -154,6 +154,7 @@ func DefaultVpcPrivateSubnets() []api.VpcSubnet {
 // DefaultClusterConfig returns a cluster config with defaults set
 func DefaultClusterConfig() *v1alpha5.ClusterConfig {
 	c, _ := clusterconfig.New(&clusterconfig.Args{
+		ClusterVersionInfo:     DefaultClusterVersionInfo(),
 		ClusterName:            DefaultClusterName,
 		PermissionsBoundaryARN: v1alpha1.PermissionsBoundaryARN(DefaultAWSAccountID),
 		PrivateSubnets:         DefaultVpcPrivateSubnets(),
@@ -165,6 +166,15 @@ func DefaultClusterConfig() *v1alpha5.ClusterConfig {
 	})
 
 	return c
+}
+
+// DefaultClusterVersionInfo is the default Okctl cluster version
+func DefaultClusterVersionInfo() version.Info {
+	return version.Info{
+		Version:     "0.0.20",
+		ShortCommit: "some-commit",
+		BuildDate:   "2021-06-22T05:17:07Z",
+	}
 }
 
 // DefaultVpc returns a vpc with defaults set
@@ -268,13 +278,13 @@ func NewBadVpcCloud() *VpcCloud {
 
 // ClusterExe provides a mock for the cluster exe interface
 type ClusterExe struct {
-	CreateClusterFn func(opts api.ClusterCreateOpts) (*api.Cluster, error)
+	CreateClusterFn func(ctx context.Context, opts api.ClusterCreateOpts) (*api.Cluster, error)
 	DeleteClusterFn func(opts api.ClusterDeleteOpts) error
 }
 
 // CreateCluster invokes the mocked create cluster function
-func (c *ClusterExe) CreateCluster(opts api.ClusterCreateOpts) (*api.Cluster, error) {
-	return c.CreateClusterFn(opts)
+func (c *ClusterExe) CreateCluster(ctx context.Context, opts api.ClusterCreateOpts) (*api.Cluster, error) {
+	return c.CreateClusterFn(ctx, opts)
 }
 
 // DeleteCluster invokes the mocked delete cluster function
@@ -285,7 +295,7 @@ func (c *ClusterExe) DeleteCluster(opts api.ClusterDeleteOpts) error {
 // NewGoodClusterExe returns a cluster exe that will succeed
 func NewGoodClusterExe() *ClusterExe {
 	return &ClusterExe{
-		CreateClusterFn: func(api.ClusterCreateOpts) (*api.Cluster, error) {
+		CreateClusterFn: func(context.Context, api.ClusterCreateOpts) (*api.Cluster, error) {
 			return DefaultCluster(), nil
 		},
 		DeleteClusterFn: func(opts api.ClusterDeleteOpts) error {
@@ -297,7 +307,7 @@ func NewGoodClusterExe() *ClusterExe {
 // NewBadClusterExe returns a cluster exe that will fail
 func NewBadClusterExe() *ClusterExe {
 	return &ClusterExe{
-		CreateClusterFn: func(opts api.ClusterCreateOpts) (*api.Cluster, error) {
+		CreateClusterFn: func(_ context.Context, opts api.ClusterCreateOpts) (*api.Cluster, error) {
 			return nil, ErrBad
 		},
 		DeleteClusterFn: func(opts api.ClusterDeleteOpts) error {

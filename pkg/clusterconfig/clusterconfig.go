@@ -17,6 +17,7 @@ import (
 // Args contains the input arguments for creating a valid
 // cluster configuration
 type Args struct {
+	ClusterVersionInfo     version.Info
 	ClusterName            string
 	PermissionsBoundaryARN string
 	PrivateSubnets         []api.VpcSubnet
@@ -39,6 +40,7 @@ func New(a *Args) (*v1alpha5.ClusterConfig, error) {
 
 func (a *Args) validate() error {
 	return validation.ValidateStruct(a,
+		validation.Field(&a.ClusterVersionInfo, validation.Required),
 		validation.Field(&a.ClusterName, validation.Required),
 		validation.Field(&a.PermissionsBoundaryARN, validation.Required),
 		validation.Field(&a.PrivateSubnets, validation.Required),
@@ -53,8 +55,6 @@ func (a *Args) validate() error {
 // New creates a cluster config
 // nolint: funlen
 func (a *Args) build() *v1alpha5.ClusterConfig {
-	v := version.GetVersionInfo()
-
 	cfg := &v1alpha5.ClusterConfig{
 		TypeMeta: TypeMeta(),
 		Metadata: v1alpha5.ClusterMeta{
@@ -62,8 +62,8 @@ func (a *Args) build() *v1alpha5.ClusterConfig {
 			Region:  a.Region,
 			Version: a.Version,
 			Tags: map[string]string{
-				v1alpha1.OkctlVersionTag:     v.Version,
-				v1alpha1.OkctlCommitTag:      v.ShortCommit,
+				v1alpha1.OkctlVersionTag:     a.ClusterVersionInfo.Version,
+				v1alpha1.OkctlCommitTag:      a.ClusterVersionInfo.ShortCommit,
 				v1alpha1.OkctlManagedTag:     "true",
 				v1alpha1.OkctlClusterNameTag: a.ClusterName,
 			},
@@ -161,6 +161,7 @@ func TypeMeta() metav1.TypeMeta {
 // ServiceAccountArgs contains the arguments for creating a valid
 // service account
 type ServiceAccountArgs struct {
+	ClusterVersionInfo     version.Info
 	ClusterName            string
 	Labels                 map[string]string
 	Name                   string
@@ -194,16 +195,14 @@ func (a *ServiceAccountArgs) validate() error {
 }
 
 func (a *ServiceAccountArgs) build() *v1alpha5.ClusterConfig {
-	v := version.GetVersionInfo()
-
 	return &v1alpha5.ClusterConfig{
 		TypeMeta: TypeMeta(),
 		Metadata: v1alpha5.ClusterMeta{
 			Name:   a.ClusterName,
 			Region: a.Region,
 			Tags: map[string]string{
-				v1alpha1.OkctlVersionTag:     v.Version,
-				v1alpha1.OkctlCommitTag:      v.ShortCommit,
+				v1alpha1.OkctlVersionTag:     a.ClusterVersionInfo.Version,
+				v1alpha1.OkctlCommitTag:      a.ClusterVersionInfo.ShortCommit,
 				v1alpha1.OkctlManagedTag:     "true",
 				v1alpha1.OkctlClusterNameTag: a.ClusterName,
 			},
