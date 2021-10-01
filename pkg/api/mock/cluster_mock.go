@@ -154,7 +154,7 @@ func DefaultVpcPrivateSubnets() []api.VpcSubnet {
 // DefaultClusterConfig returns a cluster config with defaults set
 func DefaultClusterConfig() *v1alpha5.ClusterConfig {
 	c, _ := clusterconfig.New(&clusterconfig.Args{
-		ClusterVersionInfo:     DefaultClusterVersionInfo(),
+		ClusterVersionInfo:     DefaultVersionInfo(),
 		ClusterName:            DefaultClusterName,
 		PermissionsBoundaryARN: v1alpha1.PermissionsBoundaryARN(DefaultAWSAccountID),
 		PrivateSubnets:         DefaultVpcPrivateSubnets(),
@@ -168,8 +168,8 @@ func DefaultClusterConfig() *v1alpha5.ClusterConfig {
 	return c
 }
 
-// DefaultClusterVersionInfo is the default Okctl cluster version
-func DefaultClusterVersionInfo() version.Info {
+// DefaultVersionInfo is the default version
+func DefaultVersionInfo() version.Info {
 	return version.Info{
 		Version:     "0.0.20",
 		ShortCommit: "some-commit",

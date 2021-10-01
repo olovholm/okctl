@@ -4,6 +4,7 @@ package okctl
 
 import (
 	"fmt"
+	"github.com/oslokommune/okctl/pkg/version"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -399,6 +400,8 @@ func (o *Okctl) initialise() error {
 		return err
 	}
 
+	versioner := version.New()
+
 	kubeConfigStore, err := o.KubeConfigStore()
 	if err != nil {
 		return err
@@ -415,6 +418,7 @@ func (o *Okctl) initialise() error {
 	clusterService := core.NewClusterService(
 		run.NewClusterRun(
 			o.Debug,
+			versioner,
 			kubeConfigStore,
 			path.Join(appDir, constant.DefaultCredentialsDirName, clusterName, constant.DefaultClusterAwsConfig),
 			path.Join(appDir, constant.DefaultCredentialsDirName, clusterName, constant.DefaultClusterAwsCredentials),
@@ -423,7 +427,8 @@ func (o *Okctl) initialise() error {
 		),
 	)
 
-	managedPolicyService := core.NewManagedPolicyService(awsProvider.NewManagedPolicyCloudProvider(o.CloudProvider))
+	managedPolicyService := core.NewManagedPolicyService(
+		awsProvider.NewManagedPolicyCloudProvider(o.CloudProvider, versioner))
 
 	serviceAccountService := core.NewServiceAccountService(
 		run.NewServiceAccountRun(
@@ -466,7 +471,7 @@ func (o *Okctl) initialise() error {
 	)
 
 	domainService := core.NewDomainService(
-		awsProvider.NewDomainCloudProvider(o.CloudProvider),
+		awsProvider.NewDomainCloudProvider(o.CloudProvider, versioner),
 	)
 
 	certificateService := core.NewCertificateService(
@@ -478,7 +483,7 @@ func (o *Okctl) initialise() error {
 	)
 
 	componentService := core.NewComponentService(
-		awsProvider.NewComponentCloudProvider(o.CloudProvider),
+		awsProvider.NewComponentCloudProvider(o.CloudProvider, versioner),
 	)
 
 	containerRepositoryService := core.NewContainerRepositoryService(
@@ -493,7 +498,7 @@ func (o *Okctl) initialise() error {
 	}
 
 	identityManagerService := core.NewIdentityManagerService(
-		awsProvider.NewIdentityManagerCloudProvider(o.CloudProvider),
+		awsProvider.NewIdentityManagerCloudProvider(o.CloudProvider, versioner),
 		awsProvider.NewCertificateCloudProvider(provider),
 	)
 

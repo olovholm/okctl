@@ -23,7 +23,7 @@ func TestNew(t *testing.T) {
 		{
 			name: "Validate cluster config",
 			args: &clusterconfig.Args{
-				ClusterVersionInfo:     mock.DefaultClusterVersionInfo(),
+				ClusterVersionInfo:     mock.DefaultVersionInfo(),
 				ClusterName:            "test",
 				PermissionsBoundaryARN: v1alpha1.PermissionsBoundaryARN(mock.DefaultAWSAccountID),
 				PrivateSubnets:         mock.DefaultVpcPrivateSubnets(),

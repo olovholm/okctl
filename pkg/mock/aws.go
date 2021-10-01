@@ -6,6 +6,7 @@ import "C"
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/oslokommune/okctl/pkg/version"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws/request"
@@ -140,6 +141,15 @@ func DefaultValidStsCredentials() *sts.Credentials {
 	creds.Expiration = aws.Time(time.Now().Add(1 * time.Hour).Local())
 
 	return creds
+}
+
+// DefaultVersionInfo is the default version
+func DefaultVersionInfo() version.Info {
+	return version.Info{
+		Version:     "0.0.20",
+		ShortCommit: "some-commit",
+		BuildDate:   "2021-06-22T05:17:07Z",
+	}
 }
 
 // SQAPI mocks the service quotas interface
