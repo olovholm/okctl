@@ -148,13 +148,13 @@ func buildApplyClusterCommand(o *okctl.Okctl) *cobra.Command {
 				state.Upgrade,
 			)
 
-			versioner := version.New(o.Ctx)
-			ver, err := versioner.GetVersionInfo()
+			versioner := version.New()
+			versionInfo, err := versioner.GetVersionInfo(o.Ctx)
 			if err != nil {
 				return fmt.Errorf("getting version info: %w", err)
 			}
 
-			err = clusterVersioner.ValidateBinaryVsClusterVersion(ver.Version)
+			err = clusterVersioner.ValidateBinaryVsClusterVersion(versionInfo.Version)
 			if err != nil {
 				return fmt.Errorf(commands.ValidateBinaryVsClusterVersionErr, err)
 			}
