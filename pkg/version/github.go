@@ -7,7 +7,6 @@ import (
 )
 
 type githubb struct {
-	Ctx    context.Context
 	Client *github.Client
 }
 
@@ -16,7 +15,7 @@ type repositoryRelease = github.RepositoryRelease
 const listReleasesPageSize = 100
 
 // ListReleases lists the given repository's releases
-func (g *githubb) ListReleases(owner, repo string) ([]*repositoryRelease, error) {
+func (g *githubb) ListReleases(ctx context.Context, owner, repo string) ([]*repositoryRelease, error) {
 	opts := &github.ListOptions{
 		PerPage: listReleasesPageSize,
 	}
@@ -25,7 +24,7 @@ func (g *githubb) ListReleases(owner, repo string) ([]*repositoryRelease, error)
 
 	for {
 		// Documentation: https://docs.github.com/en/rest/reference/repos#list-release-assets
-		releases, response, err := g.Client.Repositories.ListReleases(g.Ctx, owner, repo, opts)
+		releases, response, err := g.Client.Repositories.ListReleases(ctx, owner, repo, opts)
 		if err != nil {
 			return nil, fmt.Errorf("listing releases: %w", err)
 		}
@@ -42,9 +41,8 @@ func (g *githubb) ListReleases(owner, repo string) ([]*repositoryRelease, error)
 	return allReleases, nil
 }
 
-func newGithub(ctx context.Context) *githubb {
+func newGithub() *githubb {
 	return &githubb{
-		Ctx:    ctx,
 		Client: github.NewClient(nil),
 	}
 }

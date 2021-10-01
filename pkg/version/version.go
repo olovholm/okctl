@@ -8,6 +8,7 @@ import (
 	"sort"
 )
 
+// Versioner knows how to get the version
 type Versioner struct {
 	github *githubb
 }
@@ -20,12 +21,12 @@ type Info struct {
 }
 
 // GetVersionInfo populates the version information
-func (v Versioner) GetVersionInfo() (Info, error) {
+func (v Versioner) GetVersionInfo(ctx context.Context) (Info, error) {
 	var semanticVersion string
 
 	if Version == devVersion {
 		// Version needs to be a valid semantic version, so we need to replace it with something else
-		v, err := v.fetchSemanticDevVersion()
+		v, err := v.fetchSemanticDevVersion(ctx)
 		if err != nil {
 			semanticVersion = "0.0.10"
 			fmt.Printf("Warning: Could not get version, using hard coded version '%s' instead\n", semanticVersion)
@@ -44,8 +45,8 @@ func (v Versioner) GetVersionInfo() (Info, error) {
 }
 
 // String returns version info as JSON
-func (v Versioner) String() (string, error) {
-	versionInfo, err := v.GetVersionInfo()
+func (v Versioner) String(ctx context.Context) (string, error) {
+	versionInfo, err := v.GetVersionInfo(ctx)
 	if err != nil {
 		return "", fmt.Errorf("getting version info: %w", err)
 	}
@@ -58,8 +59,8 @@ func (v Versioner) String() (string, error) {
 	return string(data), nil
 }
 
-func (v Versioner) fetchSemanticDevVersion() (*semver.Version, error) {
-	releases, err := v.github.ListReleases("oslokommune", "okctl")
+func (v Versioner) fetchSemanticDevVersion(ctx context.Context) (*semver.Version, error) {
+	releases, err := v.github.ListReleases(ctx, "oslokommune", "okctl")
 	if err != nil {
 		return nil, fmt.Errorf("listing releases: %w", err)
 	}
@@ -87,8 +88,8 @@ func (v Versioner) fetchSemanticDevVersion() (*semver.Version, error) {
 	return newestVersion, nil
 }
 
-func New(ctx context.Context) Versioner {
+func New() Versioner {
 	return Versioner{
-		github: newGithub(ctx),
+		github: newGithub(),
 	}
 }
